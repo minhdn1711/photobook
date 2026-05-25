@@ -4,7 +4,7 @@
 
     <main>
       <!-- ══ PAGE HEADER ═════════════════════════════════════════ -->
-      <div class="bg-white border-b border-warm-200">
+      <div class="bg-white border-b border-warm-200 pt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <h1 class="font-heading text-3xl sm:text-4xl font-bold text-warm-900 mb-3">
             Mẫu thiết kế

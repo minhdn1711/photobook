@@ -1,7 +1,9 @@
 <template>
   <header
-    class="sticky top-0 z-header bg-white/95 backdrop-blur-sm border-b border-warm-200"
-    :class="{ 'shadow-sm': scrolled }"
+    class="fixed top-0 inset-x-0 z-[80] transition-all duration-300"
+    :class="scrolled
+      ? 'bg-white/70 backdrop-blur-md border-b border-warm-200/50 shadow-sm'
+      : 'bg-white/95 backdrop-blur-sm border-b border-warm-200'"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
@@ -91,7 +93,7 @@
       <Transition name="slide-down">
         <div
           v-if="mobileOpen"
-          class="md:hidden border-t border-warm-200 py-4 space-y-1"
+          class="md:hidden bg-white border-t border-warm-200 py-4 space-y-1"
         >
           <RouterLink
             v-for="link in navLinks"
@@ -156,7 +158,7 @@ const initials = computed(() => {
 })
 
 function handleScroll() {
-  scrolled.value = window.scrollY > 8
+  scrolled.value = window.scrollY > 20
 }
 
 onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))

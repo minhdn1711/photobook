@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHeader />
-    <div class="min-h-screen bg-warm-50 flex items-center justify-center px-4">
+    <div class="min-h-screen bg-warm-50 pt-16 flex items-center justify-center px-4">
       <div class="text-center max-w-md">
         <div class="text-7xl mb-6">🎉</div>
         <h1 class="text-2xl font-heading font-bold text-warm-900 mb-3">Đặt hàng thành công!</h1>

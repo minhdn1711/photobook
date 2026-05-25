@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHeader />
-    <section class="py-20 bg-warm-50">
+    <section class="pt-16 py-20 bg-warm-50">
       <div class="container mx-auto px-4 max-w-4xl text-center">
         <h1 class="text-4xl font-heading font-bold text-warm-900 mb-4">Bảng giá</h1>
         <p class="text-warm-500 mb-12">Giá đơn giản, minh bạch — không phụ phí ẩn</p>

@@ -16,7 +16,7 @@
     <!-- Content -->
     <template v-else-if="template">
       <!-- Hero -->
-      <section class="bg-warm-900 text-white py-16">
+      <section class="bg-warm-900 text-white pt-16 py-16">
         <div class="container mx-auto px-4 max-w-6xl">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <!-- Cover image -->

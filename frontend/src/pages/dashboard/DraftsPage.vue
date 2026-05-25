@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHeader />
-    <div class="min-h-screen bg-warm-50 py-12">
+    <div class="min-h-screen bg-warm-50 pt-16 py-12">
       <div class="container mx-auto px-4 max-w-5xl">
         <h1 class="text-3xl font-heading font-bold text-warm-900 mb-8">Bản nháp</h1>
         <div class="bg-white rounded-2xl border border-warm-100 p-12 text-center">

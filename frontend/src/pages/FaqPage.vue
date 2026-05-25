@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHeader />
-    <section class="py-20 bg-warm-50">
+    <section class="pt-16 py-20 bg-warm-50">
       <div class="container mx-auto px-4 max-w-3xl">
         <h1 class="text-4xl font-heading font-bold text-warm-900 text-center mb-12">Câu hỏi thường gặp</h1>
         <div class="space-y-4">
