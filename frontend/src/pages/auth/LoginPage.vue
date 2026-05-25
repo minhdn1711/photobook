@@ -77,8 +77,9 @@
         </div>
 
         <!-- Demo hint -->
-        <div class="mt-4 bg-warm-100 rounded-xl px-4 py-3 text-xs text-warm-500 text-center">
-          Demo: <span class="font-mono">demo@photobook.vn</span> / <span class="font-mono">Demo@12345</span>
+        <div class="mt-4 bg-warm-100 rounded-xl px-4 py-3 text-xs text-warm-600 text-center space-y-1">
+          <p><strong>Khách hàng:</strong> <span class="font-mono">demo@photobook.vn</span> / <span class="font-mono">Demo@12345</span></p>
+          <p><strong>Admin:</strong> <span class="font-mono">admin@photobook.vn</span> / <span class="font-mono">Admin@12345</span></p>
         </div>
       </div>
     </div>
