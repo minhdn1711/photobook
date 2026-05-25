@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Set-Location \"f:\\\\xampp8.2\\\\htdocs\\\\photobook\"; docker compose exec backend php -r \"try { require 'vendor/autoload.php'; \\\\$app = require 'bootstrap/app.php'; echo 'App OK\\\\n'; } catch\\(Exception \\\\$e\\) { echo \\\\$e->getMessage\\(\\); }\" 2>&1)"
+    ]
+  }
+}

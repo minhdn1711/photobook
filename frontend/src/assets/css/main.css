@@ -1,0 +1,264 @@
+/* ============================================================
+   PHOTOBOOK PLATFORM — Global Styles
+   Design System: "Warm Luxury Neutral"
+   ============================================================ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* ── CSS Custom Properties (Design Tokens) ──────────────────── */
+:root {
+  /* Backgrounds */
+  --color-bg-primary:    #FAFAF8;
+  --color-bg-secondary:  #F5F4F0;
+  --color-bg-elevated:   #FFFFFF;
+  --color-bg-dark:       #1A1A1A;
+
+  /* Warm Neutral Grays */
+  --color-gray-100: #F5F4F0;
+  --color-gray-200: #E8E7E3;
+  --color-gray-300: #D4D3CE;
+  --color-gray-400: #A09F99;
+  --color-gray-500: #6E6D66;
+  --color-gray-600: #4A4943;
+  --color-gray-700: #2E2D28;
+  --color-gray-800: #1A1A16;
+  --color-gray-900: #0F0F0C;
+
+  /* Text */
+  --color-text-primary:     #1A1A16;
+  --color-text-secondary:   #6E6D66;
+  --color-text-placeholder: #A09F99;
+  --color-text-on-dark:     #F5F4F0;
+
+  /* Accent — Warm Gold-Rose */
+  --color-accent:       #C8956C;
+  --color-accent-hover: #B07D55;
+  --color-accent-light: #F0E2D6;
+
+  /* Interactive */
+  --color-interactive:    #3B82F6;
+  --color-interactive-bg: #EFF6FF;
+
+  /* Semantic */
+  --color-success:    #22C55E;
+  --color-success-bg: #DCFCE7;
+  --color-warning:    #F59E0B;
+  --color-warning-bg: #FEF3C7;
+  --color-error:      #EF4444;
+  --color-error-bg:   #FEE2E2;
+
+  /* Layout */
+  --toolbar-height:       56px;
+  --page-nav-height:      80px;
+  --sidebar-left-width:   280px;
+  --sidebar-right-width:  260px;
+}
+
+/* ── Base Styles ─────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography ──────────────────────────────────────────────── */
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  line-height: 1.2;
+}
+
+h4, h5, h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+}
+
+/* ── Scrollbar Styling (Webkit) ──────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
+}
+
+/* ── Selection Color ─────────────────────────────────────────── */
+
+::selection {
+  background-color: var(--color-accent-light);
+  color: var(--color-text-primary);
+}
+
+/* ── Focus Styles ────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Utility Classes ─────────────────────────────────────────── */
+@layer utilities {
+  /* Skeleton Loading Animation */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-gray-200) 25%,
+      var(--color-gray-100) 50%,
+      var(--color-gray-200) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+
+  /* Truncate text with ellipsis */
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Editor layout helpers */
+  .editor-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-left-width) 1fr var(--sidebar-right-width);
+    grid-template-rows: var(--toolbar-height) 1fr var(--page-nav-height);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Canvas container */
+  .canvas-workspace {
+    background-color: #E5E7EB;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Smooth fade transition */
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 200ms ease;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+
+  /* Slide up transition */
+  .slide-up-enter-active {
+    transition: all 250ms ease-out;
+  }
+
+  .slide-up-leave-active {
+    transition: all 200ms ease-in;
+  }
+
+  .slide-up-enter-from,
+  .slide-up-leave-to {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* ── Component Layer ─────────────────────────────────────────── */
+@layer components {
+  /* Primary Button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-lg
+           bg-accent text-white font-semibold text-sm
+           transition-all duration-normal
+           hover:bg-accent-hover hover:-translate-y-px hover:shadow-accent
+           active:translate-y-0 active:shadow-none
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-lg
+           bg-transparent text-warm-800 font-semibold text-sm
+           border border-warm-300
+           transition-all duration-normal
+           hover:border-warm-400 hover:bg-warm-100
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost Button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-lg
+           bg-transparent text-warm-500 font-medium text-sm
+           transition-all duration-normal
+           hover:text-warm-800 hover:bg-warm-100;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-xl border border-warm-200 shadow-card;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-normal
+           hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  /* Form Input */
+  .form-input {
+    @apply w-full px-4 py-3 rounded-lg
+           bg-white border border-warm-300 text-warm-800
+           placeholder:text-warm-400
+           focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-30
+           focus:border-accent
+           transition-colors duration-fast;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1
+           rounded-full text-label font-medium uppercase tracking-wide;
+  }
+
+  .badge-accent {
+    @apply badge bg-accent-light text-accent;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-100 text-amber-700;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-red-700;
+  }
+}
