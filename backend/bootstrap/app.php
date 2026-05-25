@@ -37,6 +37,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => 'Resource not found.'], 404);
             }
 
+            // Invalid UUID format passed as route parameter → treat as 404
+            if ($e instanceof \Illuminate\Database\QueryException &&
+                str_contains($e->getMessage(), 'invalid input syntax for type uuid')) {
+                return response()->json(['message' => 'Resource not found.'], 404);
+            }
+
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
                 return response()->json(['message' => 'Not Found.'], 404);
             }

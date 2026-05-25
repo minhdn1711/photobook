@@ -54,7 +54,7 @@
                   <div class="text-xs text-warm-500">ID Dự án: PRJ-9923 • Dữ liệu JSON hợp lệ</div>
                 </div>
               </div>
-              <RouterLink to="/editor/1" target="_blank" class="px-4 py-2 border border-warm-300 rounded text-sm text-warm-700 bg-white hover:bg-warm-50">Xem trước thiết kế (Read-only)</RouterLink>
+              <RouterLink v-if="order?.project_id" :to="`/editor/${order.project_id}`" target="_blank" class="px-4 py-2 border border-warm-300 rounded text-sm text-warm-700 bg-white hover:bg-warm-50">Xem trước thiết kế (Read-only)</RouterLink>
             </div>
           </div>
         </div>
