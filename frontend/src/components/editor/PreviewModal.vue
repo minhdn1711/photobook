@@ -50,9 +50,9 @@
               <v-stage v-if="sheet.front !== null" :config="getStageConfig(sheet.front)">
                 <v-layer>
                   <KonvaPage 
-                    v-if="editorStore.template && editorStore.project"
+                    v-if="editorStore.template"
                     :page-config="editorStore.template.pages[sheet.front]"
-                    :page-state="editorStore.project.pages[sheet.front]"
+                    :page-state="editorStore.pages[sheet.front]"
                     :scale="getScale(sheet.front)"
                   />
                 </v-layer>
@@ -68,9 +68,9 @@
               <v-stage v-if="sheet.back !== null" :config="getStageConfig(sheet.back)">
                 <v-layer>
                   <KonvaPage 
-                    v-if="editorStore.template && editorStore.project"
+                    v-if="editorStore.template"
                     :page-config="editorStore.template.pages[sheet.back]"
-                    :page-state="editorStore.project.pages[sheet.back]"
+                    :page-state="editorStore.pages[sheet.back]"
                     :scale="getScale(sheet.back)"
                   />
                 </v-layer>
