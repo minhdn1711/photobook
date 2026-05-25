@@ -120,11 +120,23 @@ const currentSpread = ref(0) // 0 = Cover closed.
 // Sheet 8: Front = 15, Back = null (inside back)
 const sheets = computed(() => {
   const s = []
-  s.push({ front: null, back: 0 })
-  for (let i = 1; i < 15; i += 2) {
-    s.push({ front: i, back: i + 1 })
+  if (!editorStore.pages || editorStore.pages.length === 0) return s
+  
+  const totalPages = editorStore.pages.length
+  
+  // Sheet 0: Front = null (outside back), Back = 0 (Cover)
+  s.push({ front: null as number | null, back: 0 as number | null })
+  
+  // Inner sheets
+  for (let i = 1; i < totalPages - 1; i += 2) {
+    const front = i
+    const back = (i + 1 < totalPages - 1) ? i + 1 : null
+    s.push({ front, back })
   }
-  s.push({ front: 15, back: null })
+  
+  // Last sheet: Front = Last page (Back cover), Back = null (inside back)
+  s.push({ front: totalPages - 1, back: null as number | null })
+  
   return s
 })
 

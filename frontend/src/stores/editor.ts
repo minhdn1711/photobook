@@ -154,6 +154,58 @@ export const useEditorStore = defineStore('editor', () => {
     navigatePage(currentPageIndex.value - 1)
   }
 
+  function addPage() {
+    if (!template.value?.pages || pages.value.length < 2) return
+    
+    // Copy the config of a default content page (index 1)
+    const baseConfig = template.value.pages[1] || template.value.pages[0]
+    
+    // Generate new config
+    const newConfig = JSON.parse(JSON.stringify(baseConfig))
+    const now = Date.now()
+    
+    // Generate new state and assign unique IDs
+    const newState: PageState = {
+      pageIndex: 0,
+      frames: newConfig.frames.map((f: any, idx: number) => {
+        const uniqueId = `f-new-${now}-${idx}`
+        f.id = uniqueId // update config ID
+        return {
+          frameId: uniqueId,
+          photoId: null,
+          cropData: { x: 0, y: 0, scale: 1 }
+        }
+      }),
+      texts: newConfig.texts.map((t: any, idx: number) => {
+        const uniqueId = `t-new-${now}-${idx}`
+        t.id = uniqueId // update config ID
+        return {
+          textId: uniqueId,
+          content: t.defaultText || '',
+          fontFamily: t.defaultFont || 'Inter',
+          fontSize: t.defaultFontSize || 16,
+          color: t.defaultColor || '#000000',
+          textAlign: t.textAlign || 'left',
+          fontWeight: t.fontWeight || 'normal'
+        }
+      })
+    }
+    
+    // Insert BEFORE the last page (Back Cover)
+    const insertIndex = Math.max(1, pages.value.length - 1)
+    
+    template.value.pages.splice(insertIndex, 0, newConfig)
+    pages.value.splice(insertIndex, 0, newState)
+    
+    // Re-index all pages
+    template.value.pages.forEach((p, idx) => p.pageIndex = idx)
+    pages.value.forEach((p, idx) => p.pageIndex = idx)
+    
+    navigatePage(insertIndex)
+    scheduleAutosave()
+    pushHistory()
+  }
+
   // ── Photo Assignment ──────────────────────────────────────────
 
   function assignPhoto(pageIndex: number, frameId: string, photoId: string) {
@@ -377,6 +429,7 @@ export const useEditorStore = defineStore('editor', () => {
     navigatePage,
     nextPage,
     prevPage,
+    addPage,
     assignPhoto,
     removePhoto,
     updateCrop,

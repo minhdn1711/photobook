@@ -36,15 +36,21 @@
           <div class="flex gap-2 pt-2">
             <button 
               @click="resetCrop"
-              class="flex-1 py-2 bg-warm-800 hover:bg-warm-700 border border-warm-600 rounded-md text-sm font-medium transition-colors text-warm-200"
+              class="flex-1 py-2 bg-warm-800 hover:bg-warm-700 border border-warm-600 rounded-md text-sm font-medium transition-colors text-warm-200 flex items-center justify-center gap-1.5"
             >
-              🔄 Đặt lại
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Đặt lại
             </button>
             <button 
               @click="editorStore.removePhoto(editorStore.currentPageIndex, editorStore.selectedElement.id)"
-              class="flex-1 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-800/50 text-red-300 rounded-md text-sm font-medium transition-colors"
+              class="flex-1 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-800/50 text-red-300 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1.5"
             >
-              🗑️ Xóa ảnh
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Xóa ảnh
             </button>
           </div>
         </div>

@@ -98,8 +98,8 @@ onMounted(async () => {
       is_new: false,
       rating: 5,
       review_count: 100,
-      page_count: 16,
-      pages: Array.from({length: 16}).map((_, i) => ({
+      page_count: 3,
+      pages: Array.from({length: 3}).map((_, i) => ({
         pageIndex: i,
         pageSizeMM: { width: 200, height: 200 },
         canvasSize: { width: 800, height: 800 },
@@ -166,7 +166,7 @@ onMounted(async () => {
       lastSavedAt: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      pages: Array.from({length: 16}).map((_, i) => ({
+      pages: Array.from({length: 3}).map((_, i) => ({
         pageIndex: i,
         frames: [
            { frameId: `f-${i}-1`, photoId: null, cropData: { x: 0, y: 0, scale: 1 } }
