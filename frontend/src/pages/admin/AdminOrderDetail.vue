@@ -46,7 +46,9 @@
             <h3 class="font-medium text-warm-900 mb-4">File thiết kế (Dự án gốc)</h3>
             <div class="flex items-center justify-between p-4 bg-warm-50 border border-warm-200 rounded-lg">
               <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white border border-warm-200 rounded shadow-sm flex items-center justify-center text-2xl">📸</div>
+                <div class="w-16 h-16 bg-white border border-warm-200 rounded shadow-sm flex items-center justify-center">
+                  <svg class="w-8 h-8 text-warm-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </div>
                 <div>
                   <div class="font-medium text-warm-900">Album Cưới Ánh Hồng (16 trang)</div>
                   <div class="text-xs text-warm-500">ID Dự án: PRJ-9923 • Dữ liệu JSON hợp lệ</div>
@@ -66,7 +68,9 @@
           
           <!-- State: Idle -->
           <div v-if="renderState === 'idle'" class="text-center">
-            <div class="w-16 h-16 bg-warm-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🖨️</div>
+            <div class="w-16 h-16 bg-warm-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-warm-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H3a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" /></svg>
+            </div>
             <button @click="startRender" class="w-full btn-primary py-3">Bắt đầu Render</button>
           </div>
 

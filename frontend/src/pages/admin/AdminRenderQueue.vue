@@ -7,7 +7,8 @@
     <div class="p-8 max-w-6xl mx-auto">
       <h1 class="text-2xl font-heading font-bold text-warm-900 mb-6">Hàng đợi Render PDF</h1>
       <div class="bg-white rounded-2xl border border-warm-100 p-12 text-center">
-        <p class="text-6xl mb-4">🖨️</p><p class="text-warm-500">Hàng đợi trống</p>
+        <svg class="w-16 h-16 mx-auto mb-4 text-warm-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H3a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" /></svg>
+        <p class="text-warm-500">Hàng đợi trống</p>
       </div>
     </div>
   </div>
