@@ -103,8 +103,18 @@ onMounted(async () => {
         pageIndex: i,
         pageSizeMM: { width: 200, height: 200 },
         canvasSize: { width: 800, height: 800 },
-        background: i === 0 ? '#FDF8F4' : '#FFFFFF',
-        frames: [
+        background: i === 0 ? '#fdf2f8' : '#FFFFFF',
+        frames: i === 0 ? [
+          {
+            id: `f-${i}-1`,
+            x: 100, y: 250, width: 600, height: 400,
+            shape: 'rounded-rect',
+            cornerRadius: 40,
+            printSizeMM: { width: 150, height: 100 },
+            required: true,
+            tabIndex: 1
+          }
+        ] : [
           {
             id: `f-${i}-1`,
             x: 80, y: 80, width: 640, height: 640,
@@ -114,7 +124,36 @@ onMounted(async () => {
             tabIndex: 1
           }
         ],
-        texts: []
+        texts: i === 0 ? [
+          {
+            id: `t-${i}-1`,
+            x: 100, y: 100, width: 600, height: 100,
+            maxChars: 50,
+            defaultText: "Kỷ Niệm Đẹp Nhất",
+            allowedFonts: ['Inter'],
+            defaultFont: 'Inter',
+            defaultFontSize: 52,
+            allowedColors: ['#db2777', '#000000'],
+            defaultColor: '#db2777',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            isEditable: true
+          },
+          {
+            id: `t-${i}-2`,
+            x: 100, y: 170, width: 600, height: 50,
+            maxChars: 50,
+            defaultText: "Năm 2026",
+            allowedFonts: ['Inter'],
+            defaultFont: 'Inter',
+            defaultFontSize: 28,
+            allowedColors: ['#6b7280'],
+            defaultColor: '#6b7280',
+            textAlign: 'center',
+            fontWeight: 'normal',
+            isEditable: true
+          }
+        ] : []
       }))
     }
     
@@ -132,7 +171,26 @@ onMounted(async () => {
         frames: [
            { frameId: `f-${i}-1`, photoId: null, cropData: { x: 0, y: 0, scale: 1 } }
         ],
-        texts: []
+        texts: i === 0 ? [
+          {
+            textId: `t-${i}-1`,
+            content: "Kỷ Niệm Đẹp Nhất",
+            fontFamily: "Inter",
+            fontSize: 52,
+            color: "#db2777",
+            textAlign: "center",
+            fontWeight: "bold"
+          },
+          {
+            textId: `t-${i}-2`,
+            content: "Năm 2026",
+            fontFamily: "Inter",
+            fontSize: 28,
+            color: "#6b7280",
+            textAlign: "center",
+            fontWeight: "normal"
+          }
+        ] : []
       }))
     }
     

@@ -21,11 +21,17 @@
       }"
     />
 
-    <!-- Image -->
-    <v-image
-      v-if="imageObj"
-      :config="imageConfig"
-    />
+    <!-- Image clipped to frame -->
+    <v-group v-if="imageObj" :config="clipConfig">
+      <v-image 
+        :config="{
+          ...imageConfig,
+          draggable: isSelected
+        }" 
+        @dragmove="onImageDrag"
+        @dragend="onImageDragEnd"
+      />
+    </v-group>
 
     <!-- Empty State Text / Icon -->
     <v-text
@@ -131,13 +137,20 @@ const imageConfig = computed(() => {
     y: y * props.scale,
     width: scaledImgW * props.scale,
     height: scaledImgH * props.scale,
-    // Clip to frame boundary
+  }
+})
+
+const clipConfig = computed(() => {
+  const frameW = props.config.width
+  const frameH = props.config.height
+  const r = props.config.cornerRadius ? props.config.cornerRadius * props.scale : 0
+  
+  return {
     clipFunc: (ctx: CanvasRenderingContext2D) => {
-      if (props.config.cornerRadius) {
-        ctx.beginPath()
-        const r = props.config.cornerRadius * props.scale
+      if (r > 0) {
         const w = frameW * props.scale
         const h = frameH * props.scale
+        ctx.beginPath()
         ctx.moveTo(r, 0)
         ctx.lineTo(w - r, 0)
         ctx.quadraticCurveTo(w, 0, w, r)
@@ -149,7 +162,9 @@ const imageConfig = computed(() => {
         ctx.quadraticCurveTo(0, 0, r, 0)
         ctx.closePath()
       } else {
+        ctx.beginPath()
         ctx.rect(0, 0, frameW * props.scale, frameH * props.scale)
+        ctx.closePath()
       }
     }
   }
@@ -164,5 +179,43 @@ function onClick(e: any) {
     id: props.config.id,
     pageIndex: editorStore.currentPageIndex
   })
+}
+
+function onImageDrag(e: any) {
+  if (!imageObj.value) return
+  
+  const node = e.target
+  const newX = node.x() / props.scale
+  const newY = node.y() / props.scale
+  
+  const imgW = imageObj.value.width
+  const imgH = imageObj.value.height
+  const frameW = props.config.width
+  const frameH = props.config.height
+  
+  const scaleX = frameW / imgW
+  const scaleY = frameH / imgH
+  const baseScale = Math.max(scaleX, scaleY)
+  const userScale = props.state.cropData.scale || 1
+  const finalScale = baseScale * userScale
+  
+  const scaledImgW = imgW * finalScale
+  const scaledImgH = imgH * finalScale
+  
+  const baseCenterX = (frameW - scaledImgW) / 2
+  const baseCenterY = (frameH - scaledImgH) / 2
+  
+  const cropX = newX - baseCenterX
+  const cropY = newY - baseCenterY
+  
+  editorStore.updateCrop(editorStore.currentPageIndex, props.config.id, {
+    x: cropX,
+    y: cropY,
+    scale: userScale
+  })
+}
+
+function onImageDragEnd() {
+  editorStore.confirmCrop(editorStore.currentPageIndex, props.config.id)
 }
 </script>

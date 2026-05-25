@@ -24,11 +24,11 @@
       :config="{
         width: config.width * scale,
         text: displayText,
-        fontSize: state.fontSize * scale,
-        fontFamily: state.fontFamily,
-        fontStyle: state.fontWeight === 'bold' ? 'bold' : 'normal',
-        fill: state.color,
-        align: state.textAlign,
+        fontSize: (state?.fontSize || config.defaultFontSize) * scale,
+        fontFamily: state?.fontFamily || config.defaultFont,
+        fontStyle: (state?.fontWeight || config.fontWeight) === 'bold' ? 'bold' : 'normal',
+        fill: state?.color || config.defaultColor,
+        align: state?.textAlign || config.textAlign,
         opacity: isEditing ? 0 : 1, // hide text node when HTML textarea is shown
       }"
       @click="onClick"
@@ -46,7 +46,7 @@ import { useEditorStore } from '@/stores/editor'
 
 const props = defineProps<{
   config: TextDefinition
-  state: TextState
+  state?: TextState
   scale: number
 }>()
 
@@ -62,12 +62,12 @@ const isSelected = computed(() => {
 const isEditing = ref(false)
 
 const displayText = computed(() => {
-  if (!props.state.content) return props.config.defaultText || 'Nhập văn bản...'
+  if (!props.state || !props.state.content) return props.config.defaultText || 'Nhập văn bản...'
   return props.state.content
 })
 
 // Calculate text height so the selection bounding box covers it properly
-watch([displayText, () => props.state.fontSize, () => props.scale], () => {
+watch([displayText, () => props.state?.fontSize, () => props.scale], () => {
   if (textNodeRef.value) {
     const node = textNodeRef.value.getNode()
     textHeight.value = node.height()
@@ -107,13 +107,13 @@ function onDoubleClick(e: any) {
     y: stageBox.top + textPosition.y,
   }
   
-  textarea.value = props.state.content || ''
+  textarea.value = props.state?.content || props.config.defaultText || ''
   textarea.style.position = 'absolute'
   textarea.style.top = areaPosition.y + 'px'
   textarea.style.left = areaPosition.x + 'px'
   textarea.style.width = (textNode.width() - textNode.padding() * 2) + 'px'
   textarea.style.height = textNode.height() - textNode.padding() * 2 + 5 + 'px'
-  textarea.style.fontSize = (props.state.fontSize * props.scale) + 'px'
+  textarea.style.fontSize = ((props.state?.fontSize || props.config.defaultFontSize) * props.scale) + 'px'
   textarea.style.border = 'none'
   textarea.style.padding = '0px'
   textarea.style.margin = '0px'
@@ -122,10 +122,10 @@ function onDoubleClick(e: any) {
   textarea.style.outline = 'none'
   textarea.style.resize = 'none'
   textarea.style.lineHeight = textNode.lineHeight()
-  textarea.style.fontFamily = props.state.fontFamily
+  textarea.style.fontFamily = props.state?.fontFamily || props.config.defaultFont
   textarea.style.transformOrigin = 'left top'
-  textarea.style.textAlign = props.state.textAlign
-  textarea.style.color = props.state.color
+  textarea.style.textAlign = props.state?.textAlign || props.config.textAlign
+  textarea.style.color = props.state?.color || props.config.defaultColor
   
   textarea.focus()
   
