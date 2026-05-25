@@ -105,7 +105,12 @@ async function handleLogin() {
 
   try {
     await authStore.login(form.email, form.password)
-    const redirect = (route.query.redirect as string) || '/dashboard'
+    
+    let redirect = (route.query.redirect as string)
+    if (!redirect) {
+      redirect = authStore.isAdmin ? '/admin/dashboard' : '/dashboard'
+    }
+    
     router.push(redirect)
   } catch (e: any) {
     errorMsg.value = e?.response?.data?.message ?? 'Email hoặc mật khẩu không đúng'

@@ -30,6 +30,13 @@ axiosInstance.interceptors.response.use(
     const uiStore = useUiStore()
 
     if (error.response?.status === 401) {
+      const currentToken = localStorage.getItem('auth_token')
+      if (currentToken && currentToken.startsWith('mock-')) {
+        // Ignore 401 for mock mode so we can fallback to mock data without getting logged out
+        console.warn('API returned 401, but keeping mock session active.')
+        return Promise.reject(error)
+      }
+
       // Token expired — clear auth and redirect
       localStorage.removeItem('auth_token')
       window.location.href = '/login'

@@ -86,8 +86,10 @@ watch(() => photo.value?.url, (newUrl) => {
 function loadImage(url: string) {
   imageLoading.value = true
   const img = new window.Image()
+  if (!url.startsWith('blob:')) {
+    img.crossOrigin = 'Anonymous'
+  }
   img.src = url
-  img.crossOrigin = 'Anonymous'
   img.onload = () => {
     imageObj.value = img
     imageLoading.value = false

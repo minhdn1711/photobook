@@ -53,6 +53,13 @@
         <div class="flex items-center gap-4">
           <div class="text-sm text-warm-500">Xin chào, Admin</div>
           <div class="w-8 h-8 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center font-bold">A</div>
+          <button 
+            @click="handleLogout"
+            class="text-sm text-red-500 hover:text-red-700 font-medium ml-2"
+            title="Đăng xuất"
+          >
+            Đăng xuất
+          </button>
         </div>
       </header>
 
@@ -67,9 +74,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 
 // Lấy theme từ localStorage nếu có, mặc định là true (Dark)
 const isDarkSidebar = ref(localStorage.getItem('admin_sidebar_theme') !== 'light')
@@ -77,6 +87,11 @@ const isDarkSidebar = ref(localStorage.getItem('admin_sidebar_theme') !== 'light
 function toggleTheme() {
   isDarkSidebar.value = !isDarkSidebar.value
   localStorage.setItem('admin_sidebar_theme', isDarkSidebar.value ? 'dark' : 'light')
+}
+
+async function handleLogout() {
+  await authStore.logout()
+  router.push('/login')
 }
 
 const navItems = [

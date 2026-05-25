@@ -56,6 +56,16 @@
             >
               + Tạo mới
             </RouterLink>
+            
+            <button
+              @click="handleLogout"
+              class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors duration-fast ml-2 hidden sm:inline"
+              title="Đăng xuất"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
           </template>
 
           <!-- Guest -->
@@ -134,10 +144,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const router = useRouter()
 const mobileOpen = ref(false)
 const scrolled    = ref(false)
 
@@ -159,6 +170,11 @@ const initials = computed(() => {
 
 function handleScroll() {
   scrolled.value = window.scrollY > 20
+}
+
+async function handleLogout() {
+  await authStore.logout()
+  router.push('/login')
 }
 
 onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))

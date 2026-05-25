@@ -2,7 +2,8 @@
   <div 
     class="absolute inset-0 flex items-center justify-center overflow-auto bg-warm-800" 
     ref="containerRef"
-    @dragover.prevent
+    @dragenter.prevent
+    @dragover.prevent="onDragOver"
     @drop.prevent="onDrop"
   >
     <div 
@@ -15,9 +16,9 @@
       <v-stage :config="stageConfig" ref="stageRef">
         <v-layer>
           <KonvaPage 
-            v-if="editorStore.activePageConfig && editorStore.activePageState"
-            :page-config="editorStore.activePageConfig"
-            :page-state="editorStore.activePageState"
+            v-if="activePageConfig && activePageState"
+            :page-config="activePageConfig"
+            :page-state="activePageState"
             :scale="scale"
           />
         </v-layer>
@@ -44,6 +45,9 @@ const containerRef = ref<HTMLElement | null>(null)
 const stageRef = ref<any>(null)
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
+const activePageConfig = computed(() => editorStore.template?.pages[editorStore.currentPageIndex] ?? null)
+const activePageState = computed(() => editorStore.pages[editorStore.currentPageIndex] ?? null)
+
 // Zoom / Scale logic
 const baseScale = ref(1) // calculated to fit screen
 const userScale = ref(1) // user zoom multiplier
@@ -51,10 +55,10 @@ const userScale = ref(1) // user zoom multiplier
 const scale = computed(() => baseScale.value * userScale.value)
 
 const stageConfig = computed(() => {
-  if (!editorStore.activePageConfig) return { width: 0, height: 0 }
+  if (!activePageConfig.value) return { width: 0, height: 0 }
   return {
-    width: editorStore.activePageConfig.canvasSize.width * scale.value,
-    height: editorStore.activePageConfig.canvasSize.height * scale.value
+    width: activePageConfig.value.canvasSize.width * scale.value,
+    height: activePageConfig.value.canvasSize.height * scale.value
   }
 })
 
@@ -62,15 +66,15 @@ const scaledWidth = computed(() => stageConfig.value.width)
 const scaledHeight = computed(() => stageConfig.value.height)
 
 function calculateBaseScale() {
-  if (!containerRef.value || !editorStore.activePageConfig) return
+  if (!containerRef.value || !activePageConfig.value) return
   
   // Padding around canvas
   const padding = 80 
   const containerW = containerRef.value.clientWidth - padding
   const containerH = containerRef.value.clientHeight - padding
   
-  const canvasW = editorStore.activePageConfig.canvasSize.width
-  const canvasH = editorStore.activePageConfig.canvasSize.height
+  const canvasW = activePageConfig.value.canvasSize.width
+  const canvasH = activePageConfig.value.canvasSize.height
   
   const scaleW = containerW / canvasW
   const scaleH = containerH / canvasH
@@ -97,22 +101,64 @@ function zoomOut() {
   userScale.value = Math.max(userScale.value - 0.1, 0.2)
 }
 
-// Drag & Drop
+// Drag & Drop Workaround for clientX=0 bug in some browsers
+const lastDragPos = ref({ x: 0, y: 0 })
+
+function onDragOver(e: DragEvent) {
+  if (e.clientX !== 0 || e.clientY !== 0) {
+    lastDragPos.value = { x: e.clientX, y: e.clientY }
+  }
+}
+
 function onDrop(e: DragEvent) {
+  console.log('Drop event triggered!')
   const photoId = e.dataTransfer?.getData('text/plain')
-  if (!photoId || !stageRef.value) return
+  if (!photoId || !stageRef.value) {
+    console.warn('No photoId or stageRef missing', { photoId })
+    return
+  }
 
   // We need to find which frame the pointer is over
   const stage = stageRef.value.getNode()
-  stage.setPointersPositions(e)
-  const pos = stage.getPointerPosition()
+  const stageRect = stage.container().getBoundingClientRect()
   
-  if (!pos) return
+  // Fallback to last known position if drop event is bugged (clientX/Y = 0)
+  const clientX = (e.clientX === 0 && lastDragPos.value.x !== 0) ? lastDragPos.value.x : e.clientX
+  const clientY = (e.clientY === 0 && lastDragPos.value.y !== 0) ? lastDragPos.value.y : e.clientY
+
+  // Calculate pointer position relative to the stage
+  const pointerX = clientX - stageRect.left
+  const pointerY = clientY - stageRect.top
   
-  // Find frame at position
-  const shape = stage.getIntersection(pos)
-  if (shape && shape.name() && shape.name().startsWith('frame-')) {
-    const frameId = shape.name().replace('frame-', '')
+  console.log('Pointer relative to stage:', { pointerX, pointerY, clientX, clientY })
+  
+  let frameId = null
+  const pageConfig = activePageConfig.value
+  
+  if (pageConfig) {
+    // Find frame mathematically
+    for (const frame of pageConfig.frames) {
+      const fx = frame.x * scale.value
+      const fy = frame.y * scale.value
+      const fw = frame.width * scale.value
+      const fh = frame.height * scale.value
+      
+      if (pointerX >= fx && pointerX <= fx + fw && pointerY >= fy && pointerY <= fy + fh) {
+        frameId = frame.id
+        break
+      }
+    }
+    
+    // Auto-fallback: if we still couldn't find a frame, and there's only 1 frame on the page, use it.
+    if (!frameId && pageConfig.frames.length === 1) {
+      frameId = pageConfig.frames[0].id
+      console.log('Fallback: assigned to the only frame on page.')
+    }
+  }
+
+  console.log('Resolved frameId:', frameId)
+
+  if (frameId) {
     // Assign photo
     editorStore.assignPhoto(editorStore.currentPageIndex, frameId, photoId)
     // Auto select

@@ -70,11 +70,17 @@ function proceedToCheckout() {
 }
 
 onMounted(async () => {
-  const projectId = route.params.id as string
+  const projectId = route.params.projectId as string
+  const templateId = route.params.templateId as string
   
   try {
-    // Try to load from API (this is already in the store)
-    await editorStore.loadProject(projectId)
+    if (templateId) {
+      // Logic for new project (not fully implemented in mock, just use mock)
+      throw new Error("New project mock")
+    } else {
+      // Try to load from API (this is already in the store)
+      await editorStore.loadProject(projectId)
+    }
   } catch (err) {
     console.warn("Failed to load project from API, using mock data for development")
     // Mock data for development
@@ -115,7 +121,7 @@ onMounted(async () => {
     const mockProject: Project = {
       id: projectId || "mock-1",
       userId: 1,
-      templateId: 1,
+      templateId: Number(templateId) || 1,
       name: "Album Cưới của tôi",
       status: "draft",
       lastSavedAt: null,
