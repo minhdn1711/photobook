@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import type { User } from '@/types'
 import { api } from '@/lib/api'
 
@@ -19,24 +18,14 @@ export const useAuthStore = defineStore('auth', () => {
   async function init() {
     if (initialized.value) return
 
-    if (token.value === 'mock-admin-token') {
-      user.value = { id: 1, name: 'Admin', email: 'admin@photobook.vn', role: 'admin' }
-      initialized.value = true
-      return
-    }
-    if (token.value === 'mock-user-token') {
-      user.value = { id: 2, name: 'Khách hàng', email: 'demo@photobook.vn', role: 'user' }
-      initialized.value = true
-      return
-    }
-
     if (token.value) {
       try {
         const response = await api.get<User>('/auth/me')
         user.value = response.data
       } catch {
         // Token invalid — clear it
-        logout()
+        token.value = null
+        localStorage.removeItem('auth_token')
       }
     }
 
@@ -45,22 +34,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** Login with email/password */
   async function login(email: string, password: string) {
-    // ---- MOCK LOGIC FOR DEMO ----
-    if (email === 'admin@photobook.vn') {
-      token.value = 'mock-admin-token'
-      user.value = { id: 1, name: 'Admin', email: 'admin@photobook.vn', role: 'admin' }
-      localStorage.setItem('auth_token', token.value)
-      return
-    }
-    
-    if (email === 'demo@photobook.vn') {
-      token.value = 'mock-user-token'
-      user.value = { id: 2, name: 'Khách hàng', email: 'demo@photobook.vn', role: 'user' }
-      localStorage.setItem('auth_token', token.value)
-      return
-    }
-    // -----------------------------
-
     const response = await api.post<{ token: string; user: User }>('/auth/login', {
       email,
       password,

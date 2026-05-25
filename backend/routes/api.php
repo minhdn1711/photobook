@@ -38,6 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Projects CRUD
     Route::apiResource('projects', ProjectController::class);
 
+    // Autosave (lighter than full update — only saves pages data)
+    Route::post('projects/{id}/autosave', [ProjectController::class, 'autosave']);
+
     // Media nested under projects
     Route::prefix('projects/{projectId}/media')->group(function () {
         Route::get('/',       [MediaController::class, 'index']);

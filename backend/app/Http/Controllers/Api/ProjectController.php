@@ -79,7 +79,8 @@ class ProjectController extends Controller
 
     /**
      * GET /api/projects/{id}
-     * Full project detail including template pages + uploaded media.
+     * Full project detail — returns { project, template, media } for editor.
+     * Pages are flattened from data.pages so editor can consume directly.
      */
     public function show(Request $request, string $id): JsonResponse
     {
@@ -88,7 +89,18 @@ class ProjectController extends Controller
             ->with(['template.pages', 'media'])
             ->findOrFail($id);
 
-        return response()->json(['data' => new ProjectResource($project)]);
+        return response()->json([
+            'project' => [
+                'id'            => $project->id,
+                'name'          => $project->name,
+                'status'        => $project->status,
+                'pages'         => $project->data['pages'] ?? [],
+                'last_saved_at' => $project->last_saved_at?->toISOString(),
+                'created_at'    => $project->created_at->toISOString(),
+            ],
+            'template' => new \App\Http\Resources\TemplateResource($project->template),
+            'media'    => \App\Http\Resources\MediaResource::collection($project->media),
+        ]);
     }
 
     /**
@@ -119,6 +131,32 @@ class ProjectController extends Controller
         ]);
 
         return response()->json(['data' => new ProjectResource($project)]);
+    }
+
+    /**
+     * POST /api/projects/{id}/autosave
+     * Lightweight autosave — only updates pages array, never changes status.
+     */
+    public function autosave(Request $request, string $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'pages' => ['required', 'array'],
+        ]);
+
+        $project = $request->user()->projects()->findOrFail($id);
+
+        if (! in_array($project->status, ['draft'])) {
+            return response()->json(['message' => 'Cannot autosave a non-draft project.'], 422);
+        }
+
+        $project->update([
+            'data'          => ['pages' => $validated['pages']],
+            'last_saved_at' => now(),
+        ]);
+
+        return response()->json([
+            'last_saved_at' => $project->last_saved_at->toISOString(),
+        ]);
     }
 
     /**

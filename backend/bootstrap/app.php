@@ -11,8 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Sanctum token-based auth for API
-        $middleware->statefulApi();
+        // App uses Bearer token auth (not SPA cookie auth),
+        // so statefulApi() must NOT be used — it would add CSRF verification
+        // for requests from localhost, breaking all POST/PUT/DELETE API calls.
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Consistent JSON error responses for all API requests

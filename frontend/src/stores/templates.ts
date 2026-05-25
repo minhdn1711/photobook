@@ -27,7 +27,7 @@ export const useTemplateStore = defineStore('templates', () => {
     if (params.sort)     query.sort     = params.sort
 
     const res = await api.get<{ data: Template[]; meta: { last_page: number; total: number } }>(
-      '/templates', { params: query }
+      '/templates', query
     )
     return res.data
   }

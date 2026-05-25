@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import type {
   Project,
   Template,
   PageState,
-  FrameState,
   TextState,
   CropData,
   Photo,
@@ -58,17 +57,24 @@ export const useEditorStore = defineStore('editor', () => {
     if (!template.value) return []
 
     return pages.value.map((page, index) => {
-      const pageConfig = template.value!.pages[index]
-      const totalFrames = pageConfig.frames.length
-      const requiredFrames = pageConfig.frames.filter(f => f.required).length
-      const filledFrames = page.frames.filter(f => f.photoId !== null).length
+      const pageConfig = template.value?.pages?.[index]
+
+      // Template pages might not be loaded yet — return safe defaults
+      if (!pageConfig) {
+        return {
+          pageIndex: index, totalFrames: 0, filledFrames: 0,
+          requiredFrames: 0, filledRequiredFrames: 0,
+          hasLowDpiWarnings: false, isComplete: false,
+        }
+      }
+
+      const totalFrames    = pageConfig.frames.length
+      const requiredFrames = pageConfig.frames.filter((f: { required: boolean }) => f.required).length
+      const filledFrames   = page.frames.filter(f => f.photoId !== null).length
       const filledRequiredFrames = page.frames.filter(
         (f) => f.photoId !== null &&
-        pageConfig.frames.find(pf => pf.id === f.frameId)?.required
+        pageConfig.frames.find((pf: { id: string }) => pf.id === f.frameId)?.required
       ).length
-
-      // TODO: integrate DPI check results
-      const hasLowDpiWarnings = false
 
       return {
         pageIndex: index,
@@ -76,8 +82,10 @@ export const useEditorStore = defineStore('editor', () => {
         filledFrames,
         requiredFrames,
         filledRequiredFrames,
-        hasLowDpiWarnings,
-        isComplete: filledRequiredFrames === requiredFrames && filledFrames > 0,
+        hasLowDpiWarnings: false,
+        isComplete: requiredFrames === 0
+          ? filledFrames > 0
+          : filledRequiredFrames === requiredFrames,
       }
     })
   })
@@ -93,23 +101,24 @@ export const useEditorStore = defineStore('editor', () => {
   // ── Load Project ──────────────────────────────────────────────
 
   async function loadProject(projectId: string) {
-    const response = await api.get<{ project: Project; template: Template }>(
-      `/projects/${projectId}`
-    )
-    project.value = response.data.project
-    template.value = response.data.template
-    pages.value = response.data.project.pages
+    const response = await api.get<{
+      project: { id: string; name: string; status: string; pages: PageState[]; last_saved_at: string | null; created_at: string }
+      template: Template
+      media:    Photo[]
+    }>(`/projects/${projectId}`)
 
-    // Initialize from localStorage draft if newer
+    const { project: proj, template: tmpl, media } = response.data
+    project.value     = proj as unknown as Project
+    template.value    = tmpl
+    pages.value       = proj.pages ?? []
+    uploadedPhotos.value = media ?? []
+
+    // Prefer localStorage draft if it was saved more recently
     const localDraft = getLocalDraft(projectId)
-    if (localDraft && new Date(localDraft.timestamp) > new Date(project.value.lastSavedAt ?? 0)) {
+    if (localDraft && proj.last_saved_at && new Date(localDraft.timestamp) > new Date(proj.last_saved_at)) {
       pages.value = localDraft.pages
     }
 
-    // Load uploaded photos for this project
-    await loadPhotos()
-
-    // Push initial state to history
     pushHistory()
   }
 
@@ -126,15 +135,19 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   async function createProject(templateId: number, name: string): Promise<string> {
-    const response = await api.post<Project>('/projects', { template_id: templateId, name })
-    project.value = response.data
-    return response.data.id
+    const response = await api.post<{ data: { id: string; name: string; status: string; pages?: PageState[] } }>(
+      '/projects', { template_id: templateId, name }
+    )
+    const proj = response.data.data
+    project.value = proj as unknown as Project
+    pages.value   = proj.pages ?? []
+    return proj.id
   }
 
   async function loadPhotos() {
     if (!project.value) return
-    const response = await api.get<Photo[]>(`/projects/${project.value.id}/photos`)
-    uploadedPhotos.value = response.data
+    const response = await api.get<{ data: Photo[] }>(`/projects/${project.value.id}/media`)
+    uploadedPhotos.value = response.data.data ?? []
   }
 
   // ── Navigation ────────────────────────────────────────────────
@@ -244,7 +257,7 @@ export const useEditorStore = defineStore('editor', () => {
     // Don't push history for every crop move — push on crop confirm
   }
 
-  function confirmCrop(pageIndex: number, frameId: string) {
+  function confirmCrop(_pageIndex: number, _frameId: string) {
     pushHistory()
     cropMode.value = null
   }

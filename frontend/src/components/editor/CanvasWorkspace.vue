@@ -83,7 +83,7 @@ function calculateBaseScale() {
   baseScale.value = Math.min(scaleW, scaleH)
 }
 
-watch([windowWidth, windowHeight, () => editorStore.activePageIndex], () => {
+watch([windowWidth, windowHeight, () => editorStore.currentPageIndex], () => {
   // Re-calculate when window resizes or page changes
   userScale.value = 1
   calculateBaseScale()
