@@ -124,12 +124,22 @@ const imageConfig = computed(() => {
   const userScale = props.state.cropData.scale || 1
   const finalScale = baseScale * userScale
 
-  // Center it by default
   const scaledImgW = imgW * finalScale
   const scaledImgH = imgH * finalScale
   
-  let x = (frameW - scaledImgW) / 2 + (props.state.cropData.x || 0)
-  let y = (frameH - scaledImgH) / 2 + (props.state.cropData.y || 0)
+  // Clamp boundaries so image always covers the frame
+  const maxPanX = (scaledImgW - frameW) / 2
+  const maxPanY = (scaledImgH - frameH) / 2
+  
+  let cropX = props.state.cropData.x || 0
+  let cropY = props.state.cropData.y || 0
+  
+  cropX = Math.max(-maxPanX, Math.min(maxPanX, cropX))
+  cropY = Math.max(-maxPanY, Math.min(maxPanY, cropY))
+
+  // Center it by default + crop offset
+  let x = (frameW - scaledImgW) / 2 + cropX
+  let y = (frameH - scaledImgH) / 2 + cropY
 
   return {
     image: imageObj.value,
@@ -205,8 +215,21 @@ function onImageDrag(e: any) {
   const baseCenterX = (frameW - scaledImgW) / 2
   const baseCenterY = (frameH - scaledImgH) / 2
   
-  const cropX = newX - baseCenterX
-  const cropY = newY - baseCenterY
+  let cropX = newX - baseCenterX
+  let cropY = newY - baseCenterY
+  
+  // Clamp boundaries so it cannot be dragged out of bounds
+  const maxPanX = (scaledImgW - frameW) / 2
+  const maxPanY = (scaledImgH - frameH) / 2
+  
+  cropX = Math.max(-maxPanX, Math.min(maxPanX, cropX))
+  cropY = Math.max(-maxPanY, Math.min(maxPanY, cropY))
+  
+  // IMPORTANT: Force node position visually because Konva ignores :config updates during drag!
+  const clampedX = baseCenterX + cropX
+  const clampedY = baseCenterY + cropY
+  node.x(clampedX * props.scale)
+  node.y(clampedY * props.scale)
   
   editorStore.updateCrop(editorStore.currentPageIndex, props.config.id, {
     x: cropX,
