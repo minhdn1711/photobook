@@ -113,6 +113,18 @@ export const useEditorStore = defineStore('editor', () => {
     pushHistory()
   }
 
+  function initProject(p: Project, t: Template) {
+    project.value = p
+    template.value = t
+    pages.value = p.pages
+
+    const localDraft = getLocalDraft(p.id)
+    if (localDraft && new Date(localDraft.timestamp) > new Date(p.lastSavedAt ?? 0)) {
+      pages.value = localDraft.pages
+    }
+    pushHistory()
+  }
+
   async function createProject(templateId: number, name: string): Promise<string> {
     const response = await api.post<Project>('/projects', { template_id: templateId, name })
     project.value = response.data
@@ -359,6 +371,7 @@ export const useEditorStore = defineStore('editor', () => {
     canRedo,
     // Actions
     loadProject,
+    initProject,
     createProject,
     loadPhotos,
     navigatePage,

@@ -46,11 +46,13 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response?.status >= 500) {
-      uiStore.error('Lỗi server', 'Đã có lỗi xảy ra. Vui lòng thử lại sau.')
+      // uiStore.error('Lỗi server', 'Đã có lỗi xảy ra. Vui lòng thử lại sau.')
+      console.error('Server error (suppressed for mock mode):', error)
     }
 
     if (!error.response) {
-      uiStore.error('Mất kết nối', 'Kiểm tra kết nối internet và thử lại.')
+      // uiStore.error('Mất kết nối', 'Kiểm tra kết nối internet và thử lại.')
+      console.error('Network error (suppressed for mock mode):', error)
     }
 
     return Promise.reject(error)

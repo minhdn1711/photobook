@@ -8,6 +8,8 @@ const TemplateListPage   = () => import('@/pages/TemplateListPage.vue')
 const TemplateDetailPage = () => import('@/pages/TemplateDetailPage.vue')
 const PricingPage        = () => import('@/pages/PricingPage.vue')
 const FaqPage            = () => import('@/pages/FaqPage.vue')
+const PrivacyPage        = () => import('@/pages/PrivacyPage.vue')
+const TermsPage          = () => import('@/pages/TermsPage.vue')
 
 // Auth
 const LoginPage          = () => import('@/pages/auth/LoginPage.vue')
@@ -69,6 +71,18 @@ const router = createRouter({
       name: 'faq',
       component: FaqPage,
       meta: { title: 'Câu hỏi thường gặp' }
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: PrivacyPage,
+      meta: { title: 'Chính sách bảo mật' }
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: TermsPage,
+      meta: { title: 'Điều khoản dịch vụ' }
     },
 
     // ── Auth ──────────────────────────────────────────────────
