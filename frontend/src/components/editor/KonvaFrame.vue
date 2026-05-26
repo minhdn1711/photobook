@@ -71,8 +71,8 @@ const isSelected = computed(() => {
 const isHovered = ref(false)
 
 const photo = computed(() => {
-  if (!props.state.photoId) return null
-  return editorStore.uploadedPhotos.find(p => p.id === props.state.photoId) || null
+  if (!props.state?.photoId) return null
+  return editorStore.uploadedPhotos.find(p => p.id === props.state.photoId) ?? null
 })
 
 const isFilled = computed(() => !!photo.value)
@@ -121,7 +121,7 @@ const imageConfig = computed(() => {
   const baseScale = Math.max(scaleX, scaleY)
 
   // Apply user crop/zoom
-  const userScale = props.state.cropData.scale || 1
+  const userScale = props.state?.cropData?.scale || 1
   const finalScale = baseScale * userScale
 
   const scaledImgW = imgW * finalScale
@@ -131,8 +131,8 @@ const imageConfig = computed(() => {
   const maxPanX = (scaledImgW - frameW) / 2
   const maxPanY = (scaledImgH - frameH) / 2
   
-  let cropX = props.state.cropData.x || 0
-  let cropY = props.state.cropData.y || 0
+  let cropX = props.state?.cropData?.x || 0
+  let cropY = props.state?.cropData?.y || 0
   
   cropX = Math.max(-maxPanX, Math.min(maxPanX, cropX))
   cropY = Math.max(-maxPanY, Math.min(maxPanY, cropY))
@@ -206,7 +206,7 @@ function onImageDrag(e: any) {
   const scaleX = frameW / imgW
   const scaleY = frameH / imgH
   const baseScale = Math.max(scaleX, scaleY)
-  const userScale = props.state.cropData.scale || 1
+  const userScale = props.state?.cropData?.scale || 1
   const finalScale = baseScale * userScale
   
   const scaledImgW = imgW * finalScale

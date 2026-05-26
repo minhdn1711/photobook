@@ -108,16 +108,38 @@ export const useEditorStore = defineStore('editor', () => {
     }>(`/projects/${projectId}`)
 
     const { project: proj, template: tmpl, media } = response.data
-    project.value     = proj as unknown as Project
-    template.value    = tmpl
-    pages.value       = proj.pages ?? []
+    project.value        = proj as unknown as Project
+    template.value       = tmpl
     uploadedPhotos.value = media ?? []
 
     // Prefer localStorage draft if it was saved more recently
     const localDraft = getLocalDraft(projectId)
-    if (localDraft && proj.last_saved_at && new Date(localDraft.timestamp) > new Date(proj.last_saved_at)) {
-      pages.value = localDraft.pages
-    }
+    const savedPages = (localDraft && proj.last_saved_at && new Date(localDraft.timestamp) > new Date(proj.last_saved_at))
+      ? localDraft.pages
+      : (proj.pages ?? [])
+
+    // Patch: đảm bảo mỗi trang có đủ frame/text state cho mọi frame/text trong template.
+    // Xảy ra khi template được cập nhật thêm frame sau khi project đã tạo.
+    pages.value = (tmpl.pages ?? []).map((pageConfig, idx) => {
+      const existing: PageState = savedPages[idx] ?? { pageIndex: idx, frames: [], texts: [] }
+
+      const frames = pageConfig.frames.map((fc: any) => {
+        const found = existing.frames.find((fs) => fs.frameId === fc.id)
+        return found ?? { frameId: fc.id, photoId: null, cropData: { x: 0, y: 0, scale: 1 } }
+      })
+
+      const texts = (pageConfig.texts ?? []).map((tc: any) => {
+        const found = existing.texts.find((ts) => ts.textId === tc.id)
+        return found ?? {
+          textId: tc.id, content: '',
+          fontFamily: tc.defaultFont ?? 'Inter', fontSize: tc.defaultFontSize ?? 16,
+          color: tc.defaultColor ?? '#000000', textAlign: tc.textAlign ?? 'left',
+          fontWeight: tc.fontWeight ?? 'normal',
+        }
+      })
+
+      return { pageIndex: idx, frames, texts }
+    })
 
     pushHistory()
   }
@@ -153,7 +175,7 @@ export const useEditorStore = defineStore('editor', () => {
   // ── Navigation ────────────────────────────────────────────────
 
   function navigatePage(index: number) {
-    if (index < 0 || index > 15) return
+    if (index < 0 || index >= pages.value.length) return
     currentPageIndex.value = index
     selectedElement.value = null
     cropMode.value = null
@@ -167,8 +189,11 @@ export const useEditorStore = defineStore('editor', () => {
     navigatePage(currentPageIndex.value - 1)
   }
 
+  const MAX_PAGES = 30  // business limit: max 30 pages per album
+
   function addPage() {
     if (!template.value?.pages || pages.value.length < 2) return
+    if (pages.value.length >= MAX_PAGES) return
     
     // Copy the config of a default content page (index 1)
     const baseConfig = template.value.pages[1] || template.value.pages[0]
@@ -215,6 +240,33 @@ export const useEditorStore = defineStore('editor', () => {
     pages.value.forEach((p, idx) => p.pageIndex = idx)
     
     navigatePage(insertIndex)
+    scheduleAutosave()
+    pushHistory()
+  }
+
+  function deletePage(index: number) {
+    const lastIdx = pages.value.length - 1
+    // Bìa trước (0) và bìa sau (last) không được xóa
+    if (index <= 0 || index >= lastIdx) return
+    // Phải còn ít nhất 1 trang nội dung (tức tổng >= 3: bìa + 1 inner + bìa sau)
+    if (pages.value.length <= 3) return
+
+    template.value!.pages!.splice(index, 1)
+    pages.value.splice(index, 1)
+
+    // Re-index
+    template.value!.pages!.forEach((p, idx) => (p.pageIndex = idx))
+    pages.value.forEach((p, idx) => (p.pageIndex = idx))
+
+    // Nếu đang đứng ở trang bị xóa hoặc vượt quá cuối, lùi lại
+    if (currentPageIndex.value >= pages.value.length - 1) {
+      currentPageIndex.value = pages.value.length - 2 // trước bìa sau
+    } else if (currentPageIndex.value === index) {
+      // giữ nguyên index (trang kế sẽ trượt lên)
+    }
+    selectedElement.value = null
+    cropMode.value = null
+
     scheduleAutosave()
     pushHistory()
   }
@@ -443,6 +495,7 @@ export const useEditorStore = defineStore('editor', () => {
     nextPage,
     prevPage,
     addPage,
+    deletePage,
     assignPhoto,
     removePhoto,
     updateCrop,

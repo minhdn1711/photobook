@@ -13,23 +13,25 @@
 
     <!-- Frames -->
     <v-group>
-      <KonvaFrame
-        v-for="frame in pageConfig.frames"
-        :key="frame.id"
-        :config="frame"
-        :state="getFrameState(frame.id)!"
-        :scale="scale"
-      />
+      <template v-for="frame in pageConfig.frames" :key="frame.id">
+        <KonvaFrame
+          v-if="getFrameState(frame.id)"
+          :config="frame"
+          :state="getFrameState(frame.id)!"
+          :scale="scale"
+        />
+      </template>
     </v-group>
     <!-- Texts -->
     <v-group>
-      <KonvaText
-        v-for="text in pageConfig.texts"
-        :key="text.id"
-        :config="text"
-        :state="getTextState(text.id)!"
-        :scale="scale"
-      />
+      <template v-for="text in pageConfig.texts" :key="text.id">
+        <KonvaText
+          v-if="getTextState(text.id)"
+          :config="text"
+          :state="getTextState(text.id)!"
+          :scale="scale"
+        />
+      </template>
     </v-group>
   </v-group>
 </template>

@@ -23,7 +23,7 @@ class TemplateResource extends JsonResource
             'is_new'          => $this->is_new,
             'rating'          => (float) $this->rating,
             'review_count'    => $this->review_count,
-            'page_count'      => 16,
+            'page_count'      => $this->whenLoaded('pages', fn() => $this->pages->count(), 16),
             // Pages only included on detail view (when relation is loaded)
             'pages'           => $this->whenLoaded('pages', fn() =>
                 TemplatePageResource::collection($this->pages)
